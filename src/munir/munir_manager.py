@@ -29,7 +29,6 @@ class MunirManager:
             self.odin_data_instances = [OdinData(
                 endpoint, odin_data_config_path, subsystem, ctrl_timeout, liveivew_control) for endpoint in self.endpoints]
         self.set_timeout(ctrl_timeout)
-
         # Initialise the state of control and status parameters
         self.file_path = '/tmp/'
         self.file_name = 'test'

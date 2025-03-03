@@ -30,6 +30,7 @@ class OdinData:
         self.subsystem = subsystem
         self.config = self.load_config(config_path)
         self.lv = liveivew_control
+        self.consecutive_errors = 0
         logging.debug(f"Liveview control for {self.subsystem} {'enabled' if self.lv else 'disabled'}")
         if self.lv:
             self.start_lv()
@@ -69,6 +70,11 @@ class OdinData:
                 logging.error("Invalid response received")
                 return {}
         logging.error(f"No response from {self.endpoint} within timeout of: {self.ctrl_timeout}s.")
+        self.consecutive_errors += 1
+        if self.consecutive_errors > 5:
+            logging.warning(f"Multiple messages not responded to, halting message attempts until new connection event detected")
+            self.connection_status = False
+            self.consecutive_errors = 0
         return {}
 
     def _handle_monitor_event(self, event_msg):
@@ -153,7 +159,7 @@ class OdinData:
         if not self.stop_acquisition():
             return False
         # allow time for config to propogate in odin_data
-        sleep(0.01)
+        #sleep(1)
         acquisition_config = self.config.get('acquisition_config', {}).copy()
 
         plugin_name = None
@@ -202,13 +208,13 @@ class OdinData:
             if not self.stop_acquisition():
                 return False
             # allow time for config to propogate in odin_data
-            sleep(0.01)
+            #sleep(0.01)
             arm_config = self.config.get('arm_config')
             logging.debug(f'arm: {arm_config}')
             if not (self.set_config(arm_config)):
                 return False
             # allow time for config to propogate in odin_data
-            sleep(0.01)
+            #sleep(0.01)
             lv_config = self.config.get('lv_config')
             logging.debug(f'lv: {lv_config}')
             return bool(self.set_config(lv_config))
