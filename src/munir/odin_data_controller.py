@@ -1,20 +1,19 @@
 import logging
 from zmq.constants import Event
 import json
-from time import sleep
 
 from odin_data.control.ipc_channel import IpcChannel
 from odin_data.control.ipc_tornado_channel import IpcTornadoChannel
 from odin_data.control.ipc_message import IpcMessage
 
-class OdinData:
+class OdinDataController:
     """
     A class to manage a connection and interactions with an Odin-Data C++ application instance.
     """
 
-    def __init__(self, endpoint, config_path, subsystem, timeout, liveivew_control):
+    def __init__(self, endpoint, config_path, subsystem, timeout, liveivew_control, message_limit):
         """
-        Initialise the OdinData connection.
+        Initialise the OdinData application connection.
 
         :param endpoint: IpcChannel endpoint to connect to
         """
@@ -27,15 +26,14 @@ class OdinData:
         self.config = {}
         self.msg_id = 0
         self.ctrl_timeout = timeout
+        self.message_limit = message_limit
         self.subsystem = subsystem
         self.config = self.load_config(config_path)
         self.lv = liveivew_control
         self.consecutive_errors = 0
         logging.debug(f"Liveview control for {self.subsystem} {'enabled' if self.lv else 'disabled'}")
-        if self.lv:
-            self.start_lv()
+        if self.lv: self.start_lv()
         
-
     def _send_receive(self, msg_type, msg_val, params=None):
         """
         Send a message to the Odin-Data application and receive and filter any responses.
@@ -71,8 +69,8 @@ class OdinData:
                 return {}
         logging.error(f"No response from {self.endpoint} within timeout of: {self.ctrl_timeout}s.")
         self.consecutive_errors += 1
-        if self.consecutive_errors > 5:
-            logging.warning(f"Multiple messages not responded to, halting message attempts until new connection event detected")
+        if self.consecutive_errors > self.message_limit:
+            logging.warning(f"{self.message_limit} messages not responded to, stopping message attempts until new connection event detected")
             self.connection_status = False
             self.consecutive_errors = 0
         return {}
@@ -150,7 +148,6 @@ class OdinData:
         """
         Create an acquisition setup.
         
-
         :param path: File path for the acquisition
         :param acquisition_id: ID for the acquisition
         :param frames: Number of frames for the acquisition
@@ -158,8 +155,6 @@ class OdinData:
         """
         if not self.stop_acquisition():
             return False
-        # allow time for config to propogate in odin_data
-        #sleep(1)
         acquisition_config = self.config.get('acquisition_config', {}).copy()
 
         plugin_name = None
@@ -185,9 +180,6 @@ class OdinData:
 
         :return: True if the acquisition was started successfully, False otherwise
         """
-        # if not self.stop_acquisition():
-        #     return False
-
         start_config = self.config.get('start_config', {})
         logging.debug(f'Start config: {start_config}')
         return bool(self.set_config(start_config))
@@ -207,14 +199,10 @@ class OdinData:
         if self.lv:
             if not self.stop_acquisition():
                 return False
-            # allow time for config to propogate in odin_data
-            #sleep(0.01)
             arm_config = self.config.get('arm_config')
             logging.debug(f'arm: {arm_config}')
             if not (self.set_config(arm_config)):
                 return False
-            # allow time for config to propogate in odin_data
-            #sleep(0.01)
             lv_config = self.config.get('lv_config')
             logging.debug(f'lv: {lv_config}')
             return bool(self.set_config(lv_config))

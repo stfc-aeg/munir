@@ -17,18 +17,20 @@ class MunirFpController:
         self.munir_managers = {}
         ctrl_timeout = float(options.get('ctrl_timeout', 1.0))
         poll_interval = float(options.get('poll_interval', 1.0))
+        message_limit = int(options.get('message_limit', 5))
         odin_data_config_path = options.get('odin_data_config_path')
         liveview_control = bool(int(options.get('liveview_control', 0)))
         subsystems = [sub.strip() for sub in (options.get('subsystems')).split(',')]
         self.execute_flags = {name: False for name in subsystems}
         
+        # iterate over the subsystem list if it is populated with non-empty string
         for subsystem in subsystems if subsystems != [''] else []:
             endpoints = options.get(f'{subsystem}_endpoints', '')
             logging.debug(f"Endpoints for {subsystem}: {endpoints}")
 
             # Instantiate the manager for the subsystem
             self.munir_managers[subsystem] = MunirManager(
-                endpoints, ctrl_timeout, poll_interval, odin_data_config_path, liveview_control, subsystem)
+                endpoints, ctrl_timeout, poll_interval, odin_data_config_path, liveview_control, subsystem, message_limit)
 
         # Setup parameter tree
         self.param_tree = ParameterTree({

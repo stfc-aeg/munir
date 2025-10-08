@@ -4,13 +4,15 @@ import logging
 import os
 
 from odin.adapters.parameter_tree import ParameterTree
-from .odin_data_util import OdinData
+from .odin_data_controller import OdinDataController
 
 
 class MunirManager:
     """Main class for the frame processor manager object."""
 
-    def __init__(self, ctrl_endpoints, ctrl_timeout, poll_interval, odin_data_config_path, liveivew_control, subsystem):
+    def __init__(self, ctrl_endpoints, ctrl_timeout, poll_interval, 
+                 odin_data_config_path, liveivew_control, subsystem,
+                 message_limit):
         """
         Initialise the controller object.
 
@@ -22,12 +24,13 @@ class MunirManager:
         self.lv = liveivew_control
         self.ctrl_timeout = ctrl_timeout
 
-        # Create OdinData instances for each endpoint
+        # Create OdinDataController instances for each endpoint
         if len(self.endpoints) == 0:
             logging.error("Could not parse control endpoints from configuration")
         else:
-            self.odin_data_instances = [OdinData(
-                endpoint, odin_data_config_path, subsystem, ctrl_timeout, liveivew_control) for endpoint in self.endpoints]
+            self.odin_data_instances = [OdinDataController(
+                endpoint, odin_data_config_path, subsystem, ctrl_timeout, liveivew_control, message_limit) 
+                for endpoint in self.endpoints]
         self.set_timeout(ctrl_timeout)
         # Initialise the state of control and status parameters
         self.file_path = '/tmp/'
@@ -71,18 +74,9 @@ class MunirManager:
         )
         self.update_task.start()
 
-    def initialise(self):
-        """Initialise the controller instance.
-
-        This method initialises the controller instance if necessary.
-        """
-        pass
-
     def cleanup(self):
-        """Clean up the controller instance.
-
-        This method cleans up the controller instances as necessary, allowing the adapter state to
-        be cleaned up correctly.
+        """
+        Clean up the odin_data_controller instances 
         """
         self.update_task.stop()
         for odin_data in self.odin_data_instances:
