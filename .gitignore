@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+!munir/test/static/build/
+!munir/test/static/build/**
+src/munir.egg-info/PKG-INFO
+src/munir.egg-info/requires.txt
+src/munir.egg-info/SOURCES.txt
+.vscode/
