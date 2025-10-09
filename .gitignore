@@ -133,3 +133,4 @@ dmypy.json
 src/munir.egg-info/PKG-INFO
 src/munir.egg-info/requires.txt
 src/munir.egg-info/SOURCES.txt
+.vscode/
