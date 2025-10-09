@@ -1,7 +1,7 @@
 {
-  "babyd": {
+  "SUBSYSTEM_NAME_IN_ODIN_CONTROL_CFG": {
     "acquisition_config": {
-      "Babyd": {
+      "ODIN_DATA_PLUGIN_NAME": {
         "update_config": true,
         "rx_enable": false,
         "proc_enable": true,
@@ -17,7 +17,7 @@
       }
     },
     "start_config": {
-      "Babyd": {
+      "ODIN_DATA_PLUGIN_NAME": {
         "update_config": true,
         "rx_enable": true
       },
@@ -26,7 +26,7 @@
       }
     },
     "stop_config": {
-      "Babyd": {
+      "ODIN_DATA_PLUGIN_NAME": {
         "update_config": true,
         "rx_enable": false,
         "rx_frames": 0
@@ -36,7 +36,7 @@
       }
     },
     "arm_config": {
-      "Babyd" : {
+      "ODIN_DATA_PLUGIN_NAME" : {
         "update_config": true, 
         "proc_enable": true
       }, 
@@ -45,7 +45,7 @@
       }
     },
     "lv_config": {
-      "Babyd": {
+      "ODIN_DATA_PLUGIN_NAME": {
         "update_config": true,
         "rx_enable": true
       },
