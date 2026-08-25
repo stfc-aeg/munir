@@ -6,10 +6,10 @@ Author: Tim Nicholls, STFC Detector Systems Software Group
 """
 import logging
 
-from odin.adapters.adapter import ApiAdapterResponse, request_types, response_types
-from odin.adapters.parameter_tree import ParameterTreeError
-from odin.adapters.adapter import ApiAdapter
-from odin.util import decode_request_body
+from odin_control.adapters.adapter import ApiAdapterResponse, request_types, response_types
+from odin_control.adapters.parameter_tree import ParameterTreeError
+from odin_control.adapters.adapter import ApiAdapter
+from odin_control.util import decode_request_body
 
 from .fp_controller import MunirFpController
 from .controller import MunirController

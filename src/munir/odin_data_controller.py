@@ -99,8 +99,11 @@ class OdinDataController:
         try:
             with open(f'{path}/odin_data_configs.json', 'r') as file:
                 json_config = json.load(file)
-                if self.subsystem in json_config:
-                    return json_config[self.subsystem]
+                # Match the subsystem key case-insensitively, as subsystem names specified in
+                # config option names are lower-cased by the config parser
+                subsystem_keys = {key.lower(): key for key in json_config}
+                if self.subsystem.lower() in subsystem_keys:
+                    return json_config[subsystem_keys[self.subsystem.lower()]]
                 else:
                     logging.error(f"No configuration found for subsystem: {self.subsystem}")
                     return {}

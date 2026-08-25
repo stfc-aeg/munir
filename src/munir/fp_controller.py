@@ -1,8 +1,8 @@
 from functools import partial
 import logging
 
-from odin.adapters.parameter_tree import ParameterTreeError
-from odin.adapters.parameter_tree import ParameterTree
+from odin_control.adapters.parameter_tree import ParameterTreeError
+from odin_control.adapters.parameter_tree import ParameterTree
 
 from .munir_manager import MunirManager
 
@@ -25,7 +25,9 @@ class MunirFpController:
         
         # iterate over the subsystem list if it is populated with non-empty string
         for subsystem in subsystems if subsystems != [''] else []:
-            endpoints = options.get(f'{subsystem}_endpoints', '')
+            # Option names are lower-cased by the config parser, so match the endpoint option
+            # case-insensitively to allow mixed-case subsystem names to be specified
+            endpoints = options.get(f'{subsystem.lower()}_endpoints', '')
             logging.debug(f"Endpoints for {subsystem}: {endpoints}")
 
             # Instantiate the manager for the subsystem
