@@ -38,7 +38,7 @@ class MunirFpController:
         self.param_tree = ParameterTree({
             'subsystem_list': (lambda: [name for name in subsystems], None),
             'subsystems': {name: manager.param_tree for name, manager in self.munir_managers.items()},
-            'execute': {name: (lambda name=name: self.execute_flags[name], partial(self.set_execute, name)) for name in subsystems}
+            'execute': {name: (partial(self.get_execute, name), partial(self.set_execute, name)) for name in subsystems}
         })
 
     def get(self, path):
@@ -82,6 +82,13 @@ class MunirFpController:
         else:
             logging.error(f"Subsystem not determined from path: {path}")
         return subsystem
+
+    def get_execute(self, subsystem_name):
+        """Get the command execution flag for a subsystem.
+
+        :param subsystem_name: Name of the subsystem
+        """
+        return self.execute_flags[subsystem_name]
 
     def set_execute(self, subsystem_name, value):
         """Set the command execution flag for a subsystem.
