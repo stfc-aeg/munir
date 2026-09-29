@@ -16,7 +16,7 @@ from functools import partial
 
 from tornado.concurrent import run_on_executor
 
-from odin.adapters.parameter_tree import ParameterTree
+from odin_control.adapters.parameter_tree import ParameterTree
 
 from .util import MunirError
 

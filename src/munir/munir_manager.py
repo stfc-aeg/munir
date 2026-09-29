@@ -3,7 +3,7 @@ from functools import partial
 import logging
 import os
 
-from odin.adapters.parameter_tree import ParameterTree
+from odin_control.adapters.parameter_tree import ParameterTree
 from .odin_data_controller import OdinDataController
 
 
@@ -20,16 +20,17 @@ class MunirManager:
         :param ctrl_timeout: Timeout value for control operations
         :param poll_interval: Poll interval for status updates
         """
-        self.endpoints = [ep.strip() for ep in ctrl_endpoints.split(',')]
+        self.endpoints = [ep.strip() for ep in ctrl_endpoints.split(',') if ep.strip()]
         self.lv = liveivew_control
         self.ctrl_timeout = ctrl_timeout
+        self.odin_data_instances = []
 
         # Create OdinDataController instances for each endpoint
         if len(self.endpoints) == 0:
             logging.error("Could not parse control endpoints from configuration")
         else:
             self.odin_data_instances = [OdinDataController(
-                endpoint, odin_data_config_path, subsystem, ctrl_timeout, liveivew_control, message_limit) 
+                endpoint, odin_data_config_path, subsystem, ctrl_timeout, liveivew_control, message_limit)
                 for endpoint in self.endpoints]
         self.set_timeout(ctrl_timeout)
         # Initialise the state of control and status parameters
